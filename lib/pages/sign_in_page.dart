@@ -1,11 +1,14 @@
-
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:safeguardclient/bloc/blocs.dart';
 import 'package:safeguardclient/pages/home_page.dart';
+import 'package:safeguardclient/pages/main_page.dart';
 import 'package:safeguardclient/shared/theme.dart';
 import 'package:safeguardclient/widgets/buttons.dart';
 import 'package:safeguardclient/widgets/forms.dart';
 import 'package:safeguardclient/services/message_service.dart';
-
+import 'package:firebase_database/firebase_database.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 class SignInPage extends StatefulWidget {
   const SignInPage({super.key});
 
@@ -16,37 +19,38 @@ class SignInPage extends StatefulWidget {
 class _SignInPageState extends State<SignInPage> {
   final emailController = TextEditingController(text: '');
   final passwordController = TextEditingController(text: '');
+  void _showLocalNotification() async {
+    final flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+    
+    const AndroidNotificationDetails androidPlatformChannelSpecifics =
+        AndroidNotificationDetails(
+      'channel_id',
+      'channel_name',
+      importance: Importance.max,
+      priority: Priority.high,
+    );
+    const NotificationDetails platformChannelSpecifics =
+        NotificationDetails(android: androidPlatformChannelSpecifics);
 
-  void _showLoginFailedSnackbar() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Login failed. Please check your email and password.',
-        style: whiteTextStyle.copyWith(
-              fontSize: 14,
-              fontWeight: semiBold,
-            ),
-        ),
-        duration: Duration(seconds: 3),
-        backgroundColor: redColor,
-            behavior: SnackBarBehavior.floating,
-      ),
+    await flutterLocalNotificationsPlugin.show(
+      0,
+      'Welcome!',
+      'You have successfully signed in.',
+      platformChannelSpecifics,
     );
   }
     void _handleSignIn() {
-    // Simulate login logic
-    // String email = emailController.text;
-    // String password = passwordController.text;
+    // Perform your sign-in logic here
 
-    // Replace this with your actual login logic
-    // if (email == 'admin@gmail.com' && password == 'admin123') {
-    //   Navigator.push(
-    //         context, MaterialPageRoute(builder: (context) => const HomePage()));
-    // } else {
-    //   _showLoginFailedSnackbar();
-    // }
+    // Show a local notification
+    // _showLocalNotification();
       NotificationService()
               .showNotification(title: 'Sample title', body: 'It works!');
   }
+      void _handleSignInn() {
+ context.read<PageBloc>().add(GoToMainPage());
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -66,6 +70,25 @@ class _SignInPageState extends State<SignInPage> {
               ),
             ),
           ),
+          // SizedBox(
+          //   child: StreamBuilder<DatabaseEvent>(
+          //     stream: getDataStream(),
+          //     builder: (BuildContext context,
+          //         AsyncSnapshot<DatabaseEvent> snapshot) {
+          //       if (snapshot.hasData && snapshot.data != null) {
+          //         // Process the data
+          //         dataDariFirebase = snapshot.data!.snapshot.value.toString();
+          //       }
+          //       return Text(
+          //         '$dataDariFirebase mg/dL',
+          //         style: blackTextStyle.copyWith(
+          //           fontSize: 30,
+          //           fontWeight: FontWeight.w400,
+          //         ),
+          //       );
+          //     },
+          //   ),
+          // ),
           Text(
             "Sign In &\nEmergency our health",
             style: blackTextStyle.copyWith(
@@ -85,20 +108,19 @@ class _SignInPageState extends State<SignInPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                 CustomTextFormField(
+                CustomTextFormField(
                   label: "Email Address",
                   keyboardType: TextInputType.emailAddress,
-                   controller: emailController,
+                  controller: emailController,
                 ),
                 const SizedBox(
                   height: 16,
                 ),
-                 CustomTextFormField(
+                CustomTextFormField(
                   label: "Password",
                   isObscure: true,
                   controller: passwordController,
                 ),
-
                 const SizedBox(
                   height: 30,
                 ),
@@ -106,13 +128,20 @@ class _SignInPageState extends State<SignInPage> {
                   title: "Sign In",
                   onPressed: _handleSignIn,
                 ),
+            ElevatedButton(
+  onPressed: _handleSignIn, // You can add this directly as onPressed
+  child: Text('Show Local Notification'),
+),
+            ElevatedButton(
+  onPressed: _handleSignInn, // You can add this directly as onPressed
+  child: Text('Show Local Notification'),
+),
               ],
             ),
           ),
           const SizedBox(
             height: 50,
           ),
-
         ],
       ),
     );

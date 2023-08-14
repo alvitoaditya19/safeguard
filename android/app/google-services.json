@@ -1,33 +1,33 @@
 {
   "project_info": {
-    "project_number": "843122617204",
-    "project_id": "safeguard-48aeb",
-    "storage_bucket": "safeguard-48aeb.appspot.com"
+    "project_number": "412803437191",
+    "project_id": "safegua-de4be",
+    "storage_bucket": "safegua-de4be.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:843122617204:android:ca7492e84302cb8f529a21",
+        "mobilesdk_app_id": "1:412803437191:android:0f02cf9a452eeb5dccde22",
         "android_client_info": {
           "package_name": "com.example.safeguardclient"
         }
       },
       "oauth_client": [
         {
-          "client_id": "843122617204-oa5gvonv9rm8lnol6d09mrsjtpjs998l.apps.googleusercontent.com",
+          "client_id": "412803437191-t3r6ukgv5osu1veqslia9pgt39m4qqmp.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyAqvozZj67_H5cWMx8lkAbuzPZhSQYd5C4"
+          "current_key": "AIzaSyAODhDolcuQjMIaQX7ebsQH_Ekq7geYOKg"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "843122617204-oa5gvonv9rm8lnol6d09mrsjtpjs998l.apps.googleusercontent.com",
+              "client_id": "412803437191-t3r6ukgv5osu1veqslia9pgt39m4qqmp.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
