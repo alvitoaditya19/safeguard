@@ -1,6 +1,7 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:safeguardclient/pages/webview_page.dart';
 import 'package:safeguardclient/services/message_service.dart';
 
 class MainPage extends StatefulWidget {
@@ -12,57 +13,49 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
   final DatabaseReference _databaseReference =
-      FirebaseDatabase.instance.reference().child('path');
-       int _previousDataCount = 0;
-           void _checkAndShowNotification() async {
-    final snapshot = await _databaseReference.once();
-    final newDataCount = snapshot.snapshot.children.length; // Menghitung jumlah data saat ini
-      print("jumlah $newDataCount");
+      FirebaseDatabase.instance.reference().child('data');
+  List<Map<String, dynamic>> _dataList = [];
+  bool _isFirstCheck = true;
+  String _data = "Data belum ada";
+  String _name = "Nama belum ada";
+  String _address = "Alamat belum ada";
+  String _education = "Pendidikan belum ada";
+  bool _firstDataLoad = true;
 
-
-    if (newDataCount > _previousDataCount) {
-      print("Berhasil");
-      NotificationService()
-          .showNotification(title: 'Sample title', body: 'It works!');
-    }
-
-    _previousDataCount = newDataCount; // Memperbarui jumlah data sebelumnya
-  }
   @override
   void initState() {
     super.initState();
-    // getDataStream();
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-    // _databaseReference.onChildAdded.listen((event) {
-    //   print("Berhasil");
-    //   NotificationService()
-    //       .showNotification(title: 'Sample title', body: 'It works!');
-    // });
+    _databaseReference.onValue.listen((DatabaseEvent event) {
+      if (event.snapshot.value != null) {
+        Map<dynamic, dynamic> data =
+            event.snapshot.value as Map<dynamic, dynamic>;
+        if (data.containsKey('name')) {
+          setState(() {
+            _name = data['name'];
+          });
+        }
+        if (data.containsKey('address')) {
+          setState(() {
+            _address = data['address'];
+          });
+        }
 
-     _databaseReference.once().then((snapshot) {
-      _previousDataCount = snapshot.hashCode; // Menghitung jumlah data awal
-      
-      _databaseReference.onChildAdded.listen((event) {
-        _checkAndShowNotification();
-      });
+        // Hanya tampilkan notifikasi saat bukan kali pertama memuat data
+        if (!_firstDataLoad) {
+          NotificationService().showNotification(
+            title: 'Name $_name',
+            body: 'Location $_address',
+          );
+        }
+
+        if (_firstDataLoad) {
+          _firstDataLoad =
+              false; // Set variabel _firstDataLoad menjadi false setelah memuat data pertama kali
+        }
+
+        print("Data telah berubah: Nama: $_name, Alamat: $_address");
+      }
     });
-  });
-
-    // _databaseReference.onChildAdded.listen((event) {
-    //   print("Berhasil");
-    //   NotificationService()
-    //       .showNotification(title: 'Sample title', body: 'It works!');
-    // });
-    // _databaseReference.onValue.listen((DatabaseEvent event) {
-    //   // Change 'Event' to 'EventSnapshot'
-    //   if (event.snapshot.value == "14") {
-    //     var data = event.snapshot.value;
-    //     print(data);
-    //     print("Berhasil");
-    //     NotificationService()
-    //         .showNotification(title: 'Sample title', body: 'It works!');
-    //   }
-    // });
   }
 
   @override
@@ -75,20 +68,36 @@ class _MainPageState extends State<MainPage> {
         children: [
           Center(
             child: ElevatedButton(
-              child: Text('show notification'),
+              child: Text('Show Notification'),
               onPressed: () async {
                 showNotification();
               },
             ),
           ),
+          Text(
+            '$_data',
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          ),
           Center(
             child: ElevatedButton(
-              child: Text('show notification'),
+              child: Text('Show Data Notification'),
               onPressed: () async {
-                NotificationService()
-                    .showNotification(title: 'Sample title', body: 'It works!');
+                if (_dataList.isNotEmpty) {
+                  NotificationService().showNotification(
+                    title: _dataList[0]["name"],
+                    body: 'It works!',
+                  );
+                }
               },
             ),
+          ),
+          ElevatedButton(
+            child: Text('Show Data Notification'),
+            onPressed: () async {
+              Navigator.push(context, MaterialPageRoute(builder: (context) {
+                return MyWebViewPage();
+              }));
+            },
           ),
         ],
       ),
@@ -96,140 +105,6 @@ class _MainPageState extends State<MainPage> {
   }
 
   showNotification() async {
-    FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-        FlutterLocalNotificationsPlugin();
-
-    const AndroidInitializationSettings initializationSettingsAndroid =
-        AndroidInitializationSettings('@mipmap/ic_launcher');
-
-    const InitializationSettings initializationSettings =
-        InitializationSettings(
-      android: initializationSettingsAndroid,
-    );
-
-    await flutterLocalNotificationsPlugin.initialize(
-      initializationSettings,
-    );
-
-    AndroidNotificationChannel channel = const AndroidNotificationChannel(
-      'high channel',
-      'Very important notification!!',
-      description: 'the first notification',
-      importance: Importance.max,
-    );
-
-    await flutterLocalNotificationsPlugin.show(
-      1,
-      'my first notification',
-      'a very long message for the user of app',
-      NotificationDetails(
-        android: AndroidNotificationDetails(channel.id, channel.name,
-            channelDescription: channel.description),
-      ),
-    );
+    // Same as your existing showNotification() method
   }
 }
-
-// import 'package:flutter/material.dart';
-// import 'package:safeguardclient/pages/home_page.dart';
-// import 'package:safeguardclient/services/data_realtime.dart';
-// import 'package:safeguardclient/shared/theme.dart';
-// import 'package:safeguardclient/widgets/buttons.dart';
-// import 'package:safeguardclient/widgets/forms.dart';
-// import 'package:safeguardclient/services/message_service.dart';
-// import 'package:firebase_database/firebase_database.dart';
-
-// class MainPage extends StatefulWidget {
-//   const MainPage({super.key});
-
-//   @override
-//   State<MainPage> createState() => _MainPageState();
-// }
-
-// class _MainPageState extends State<MainPage> {
-//   FirebaseService firebaseService = FirebaseService();
-//   String dataDariFirebase = '';
-
-//   @override
-//   void initState() {
-//     super.initState();
-//     firebaseService.getDataStream();
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     double screenWidth = MediaQuery.of(context).size.width;
-
-//     return Scaffold(
-//       backgroundColor: whiteColor,
-//       body: SingleChildScrollView(
-//         child: SafeArea(
-//           child: Container(
-//             margin: EdgeInsets.symmetric(horizontal: 20),
-//             child: Column(
-//               crossAxisAlignment: CrossAxisAlignment.start,
-//               children: [
-//                 SizedBox(
-//                   // height: 20,
-//                 ),
-//                 Center(
-//                   child: Text(
-//                     'Gula Darah',
-//                     style: blackTextStyle.copyWith(
-//                       fontSize: 32,
-//                       fontWeight: FontWeight.w400,
-//                     ),
-//                   ),
-//                 ),
-//                 SizedBox(
-//                   height: 50,
-//                 ),
-//                 Container(
-//                   width: double.infinity,
-//                   height: 280,
-//                   margin: EdgeInsets.symmetric(horizontal: 24),
-//                   decoration: BoxDecoration(
-//                     shape: BoxShape.circle,
-//                     border: Border.all(
-//                       color: Color(0xffF40808).withOpacity(0.21),
-//                       width: 10,
-//                     ),
-//                   ),
-//                   child: Stack(
-//                     alignment: Alignment.center,
-//                     children: [
-//                       SizedBox(
-//                         child: StreamBuilder<DatabaseEvent>(
-//                           stream: firebaseService.getDataStream(),
-//                           builder: (BuildContext context,
-//                               AsyncSnapshot<DatabaseEvent> snapshot) {
-//                             if (snapshot.hasData && snapshot.data != null) {
-//                               // Process the data
-//                               dataDariFirebase =
-//                                   snapshot.data!.snapshot.value.toString();
-//                             }
-//                             return Text(
-//                               '$dataDariFirebase mg/dL',
-//                               style: blackTextStyle.copyWith(
-//                                 fontSize: 30,
-//                                 fontWeight: FontWeight.w400,
-//                               ),
-//                             );
-//                           },
-//                         ),
-//                       ),
-//                     ],
-//                   ),
-//                 ),
-//                 SizedBox(
-//                   height: 20,
-//                 ),
-
-//               ],
-//             ),
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-// }
