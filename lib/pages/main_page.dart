@@ -1,6 +1,8 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:safeguardclient/bloc/blocs.dart';
 import 'package:safeguardclient/pages/webview_page.dart';
 import 'package:safeguardclient/services/message_service.dart';
 import 'package:safeguardclient/shared/theme.dart';
@@ -20,18 +22,56 @@ class _MainPageState extends State<MainPage> {
   bool _isFirstCheck = true;
   String _data = "Data belum ada";
   String _name = "Nama belum ada";
+  String _status = "no";
+
   String _address = "https://goo.gl/maps/vWv3AmSWaGbaCJyV7";
   String _education = "Pendidikan belum ada";
   bool _firstDataLoad = true;
   late WebView _webView;
   WebViewController? _controller;
-  @override
-  void initState() {
-    super.initState();
+
+  Future<void> _showStatusAlertDialog() async {
+    return showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Konfirmasi Status'),
+          content: Text('Apakah Anda ingin mengubah status menjadi "No"?'),
+          actions: <Widget>[
+            TextButton(
+              child: Text('Yes'),
+              onPressed: () {
+                // _updateStatus("no");
+                _databaseReference.update({'name': 'dfd', 'status': 'vvvv'});
+
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _updateStatus(String newStatus) async {
     _databaseReference.onValue.listen((DatabaseEvent event) {
       if (event.snapshot.value != null) {
         Map<dynamic, dynamic> data =
             event.snapshot.value as Map<dynamic, dynamic>;
+        data.containsKey('status').update(key, (value) => null);
+      }
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    _databaseReference.onValue.listen((DatabaseEvent event) {
+      if (event.snapshot.value != null) {
+        Map<dynamic, dynamic> data =
+            event.snapshot.value as Map<dynamic, dynamic>;
+        _showStatusAlertDialog();
         if (data.containsKey('name')) {
           setState(() {
             _name = data['name'];
@@ -43,6 +83,16 @@ class _MainPageState extends State<MainPage> {
           });
           _controller?.loadUrl(_address);
         }
+
+        // if (data.containsKey('status')) {
+        //   setState(() {
+        //     _status = data['status'];
+        //   });
+        //   if (_status == "yes") {
+        //     _showStatusAlertDialog();
+        //     print("dddddddddddddddddddddddddd");
+        //   }
+        // }
 
         // Hanya tampilkan notifikasi saat bukan kali pertama memuat data
         if (!_firstDataLoad) {
@@ -57,7 +107,8 @@ class _MainPageState extends State<MainPage> {
               false; // Set variabel _firstDataLoad menjadi false setelah memuat data pertama kali
         }
 
-        print("Data telah berubah: Nama: $_name, Alamat: $_address");
+        print(
+            "Data telah berubah: Nama: $_name, Alamattttttttttt: $_address, Status: $_status");
       }
     });
   }
@@ -68,8 +119,14 @@ class _MainPageState extends State<MainPage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back, color: whiteColor),
+            onPressed: () {
+              context.read<PageBloc>().add(GoToHomePage());
+            },
+          ),
           title: Text(
-            "Location | $_address",
+            "Location",
             style: whiteTextStyle,
           ),
           backgroundColor: blueColor,

@@ -16,6 +16,8 @@ class PageBloc extends Bloc<PageEvent, PageState> {
         emit(OnSignIn());
       } else if (event is GoToMainPage) {
         emit(OnMainPage());
+      }  else if (event is GoToHomePage) {
+        emit(OnHomePage());
       } 
     });
   }

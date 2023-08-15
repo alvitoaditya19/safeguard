@@ -10,6 +10,8 @@ import 'package:safeguardclient/services/message_service.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:webview_flutter/webview_flutter.dart';
+import 'package:vibration/vibration.dart';
+
 class SignInPage extends StatefulWidget {
   const SignInPage({super.key});
 
@@ -22,7 +24,7 @@ class _SignInPageState extends State<SignInPage> {
   final passwordController = TextEditingController(text: '');
   void _showLocalNotification() async {
     final flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
-    
+
     const AndroidNotificationDetails androidPlatformChannelSpecifics =
         AndroidNotificationDetails(
       'channel_id',
@@ -40,16 +42,20 @@ class _SignInPageState extends State<SignInPage> {
       platformChannelSpecifics,
     );
   }
-    void _handleSignIn() {
+
+  void _handleSignIn() {
     // Perform your sign-in logic here
 
     // Show a local notification
     // _showLocalNotification();
-      // NotificationService()
-      //         .showNotification(title: 'Sample title', body: 'It works!');
+    // NotificationService()
+    //         .showNotification(title: 'Sample title', body: 'It works!');
   }
-      void _handleSignInn() {
- context.read<PageBloc>().add(GoToMainPage());
+  void _handleSignInn() {
+    context.read<PageBloc>().add(GoToMainPage());
+  }
+    void _handleHome() {
+    context.read<PageBloc>().add(GoToHomePage());
   }
 
   @override
@@ -58,12 +64,14 @@ class _SignInPageState extends State<SignInPage> {
       body: ListView(
         padding: const EdgeInsets.symmetric(horizontal: 24),
         children: [
-               
           Container(
-            width: MediaQuery.of(context).size.width * 0.4, // Menyesuaikan lebar layar
-            height: MediaQuery.of(context).size.height * 0.3, // Menyesuaikan tinggi layar (misalnya 70%)
+            width: MediaQuery.of(context).size.width *
+                0.4, // Menyesuaikan lebar layar
+            height: MediaQuery.of(context).size.height *
+                0.3, // Menyesuaikan tinggi layar (misalnya 70%)
             child: WebView(
-              initialUrl: 'https://www.google.com/maps', // Ganti URL sesuai kebutuhan
+              initialUrl:
+                  'https://www.google.com/maps', // Ganti URL sesuai kebutuhan
               javascriptMode: JavascriptMode.unrestricted,
             ),
           ),
@@ -138,14 +146,16 @@ class _SignInPageState extends State<SignInPage> {
                   title: "Sign In",
                   onPressed: _handleSignIn,
                 ),
-            ElevatedButton(
-  onPressed: _handleSignIn, // You can add this directly as onPressed
-  child: Text('Show Local Notification'),
-),
-            ElevatedButton(
-  onPressed: _handleSignInn, // You can add this directly as onPressed
-  child: Text('Show Local Notification'),
-),
+                ElevatedButton(
+                  onPressed:
+                      _handleHome, // You can add this directly as onPressed
+                  child: Text('Show Local Notification'),
+                ),
+                ElevatedButton(
+                  onPressed:
+                      _handleSignInn, // You can add this directly as onPressed
+                  child: Text('Show Local Notification'),
+                ),
               ],
             ),
           ),

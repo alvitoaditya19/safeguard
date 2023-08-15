@@ -21,5 +21,9 @@ class OnMainPage extends PageState {
   @override
   List<Object> get props => [];
 }
+class OnHomePage extends PageState {
+  @override
+  List<Object> get props => [];
+}
 
 

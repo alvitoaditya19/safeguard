@@ -25,8 +25,11 @@ class _WrapperState extends State<Wrapper> {
             ? SplashPage()
             : (pageState is OnSignIn)
                 ? SignInPage()
+                : (pageState is OnHomePage)
+                    ? HomePage()
                 : (pageState is OnMainPage)
                     ? MainPage()
+                     
                     : SplashPage());
   }
 }
