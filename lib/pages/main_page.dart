@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:safeguardclient/pages/webview_page.dart';
 import 'package:safeguardclient/services/message_service.dart';
+import 'package:safeguardclient/shared/theme.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({Key? key}) : super(key: key);
@@ -18,10 +20,11 @@ class _MainPageState extends State<MainPage> {
   bool _isFirstCheck = true;
   String _data = "Data belum ada";
   String _name = "Nama belum ada";
-  String _address = "Alamat belum ada";
+  String _address = "https://goo.gl/maps/vWv3AmSWaGbaCJyV7";
   String _education = "Pendidikan belum ada";
   bool _firstDataLoad = true;
-
+  late WebView _webView;
+  WebViewController? _controller;
   @override
   void initState() {
     super.initState();
@@ -38,14 +41,15 @@ class _MainPageState extends State<MainPage> {
           setState(() {
             _address = data['address'];
           });
+          _controller?.loadUrl(_address);
         }
 
         // Hanya tampilkan notifikasi saat bukan kali pertama memuat data
         if (!_firstDataLoad) {
           NotificationService().showNotification(
-            title: 'Name $_name',
-            body: 'Location $_address',
-          );
+              title: 'Name $_name',
+              body: 'Location $_address',
+              payLoad: _address);
         }
 
         if (_firstDataLoad) {
@@ -58,50 +62,43 @@ class _MainPageState extends State<MainPage> {
     });
   }
 
+  bool isLoading = true;
+  final _key = UniqueKey();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Notification example'),
-      ),
-      body: Column(
-        children: [
-          Center(
-            child: ElevatedButton(
-              child: Text('Show Notification'),
-              onPressed: () async {
-                showNotification();
+        appBar: AppBar(
+          title: Text(
+            "Location | $_address",
+            style: whiteTextStyle,
+          ),
+          backgroundColor: blueColor,
+        ),
+        body: Stack(
+          children: [
+            Container(
+                child: WebView(
+              key: _key,
+              initialUrl: _address, // Set initialUrl to _address
+              javascriptMode: JavascriptMode.unrestricted,
+              onWebViewCreated: (WebViewController controller) {
+                _controller = controller;
               },
-            ),
-          ),
-          Text(
-            '$_data',
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-          ),
-          Center(
-            child: ElevatedButton(
-              child: Text('Show Data Notification'),
-              onPressed: () async {
-                if (_dataList.isNotEmpty) {
-                  NotificationService().showNotification(
-                    title: _dataList[0]["name"],
-                    body: 'It works!',
-                  );
-                }
+              onPageFinished: (finish) {
+                // No need to reload the URL here, it's already loaded
+                setState(() {
+                  isLoading =
+                      false; // Set isLoading to false when page finishes loading
+                });
               },
-            ),
-          ),
-          ElevatedButton(
-            child: Text('Show Data Notification'),
-            onPressed: () async {
-              Navigator.push(context, MaterialPageRoute(builder: (context) {
-                return MyWebViewPage();
-              }));
-            },
-          ),
-        ],
-      ),
-    );
+            )),
+            isLoading
+                ? Center(
+                    child: CircularProgressIndicator(),
+                  )
+                : Stack(),
+          ],
+        ));
   }
 
   showNotification() async {
