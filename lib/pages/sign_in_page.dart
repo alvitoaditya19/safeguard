@@ -61,20 +61,10 @@ class _SignInPageState extends State<SignInPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+
       body: ListView(
         padding: const EdgeInsets.symmetric(horizontal: 24),
         children: [
-          Container(
-            width: MediaQuery.of(context).size.width *
-                0.4, // Menyesuaikan lebar layar
-            height: MediaQuery.of(context).size.height *
-                0.3, // Menyesuaikan tinggi layar (misalnya 70%)
-            child: WebView(
-              initialUrl:
-                  'https://www.google.com/maps', // Ganti URL sesuai kebutuhan
-              javascriptMode: JavascriptMode.unrestricted,
-            ),
-          ),
           Container(
             margin: const EdgeInsets.only(
               top: 100,
@@ -88,25 +78,6 @@ class _SignInPageState extends State<SignInPage> {
               ),
             ),
           ),
-          // SizedBox(
-          //   child: StreamBuilder<DatabaseEvent>(
-          //     stream: getDataStream(),
-          //     builder: (BuildContext context,
-          //         AsyncSnapshot<DatabaseEvent> snapshot) {
-          //       if (snapshot.hasData && snapshot.data != null) {
-          //         // Process the data
-          //         dataDariFirebase = snapshot.data!.snapshot.value.toString();
-          //       }
-          //       return Text(
-          //         '$dataDariFirebase mg/dL',
-          //         style: blackTextStyle.copyWith(
-          //           fontSize: 30,
-          //           fontWeight: FontWeight.w400,
-          //         ),
-          //       );
-          //     },
-          //   ),
-          // ),
           Text(
             "Sign In &\nEmergency our health",
             style: blackTextStyle.copyWith(

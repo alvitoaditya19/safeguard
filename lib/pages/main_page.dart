@@ -41,9 +41,15 @@ class _MainPageState extends State<MainPage> {
             TextButton(
               child: Text('Yes'),
               onPressed: () {
-                // _updateStatus("no");
-                _databaseReference.update({'name': 'dfd', 'status': 'vvvv'});
+                // Map<String, dynamic> updatedData = {
+                //   'status': 'no',
+                // };
 
+                // _databaseReference.update(updatedData).then((_) {
+                //   print("Data updated successfully");
+                // }).catchError((error) {
+                //   print("Failed to update data: $error");
+                // });
                 Navigator.of(context).pop();
               },
             ),
@@ -51,16 +57,6 @@ class _MainPageState extends State<MainPage> {
         );
       },
     );
-  }
-
-  Future<void> _updateStatus(String newStatus) async {
-    _databaseReference.onValue.listen((DatabaseEvent event) {
-      if (event.snapshot.value != null) {
-        Map<dynamic, dynamic> data =
-            event.snapshot.value as Map<dynamic, dynamic>;
-        data.containsKey('status').update(key, (value) => null);
-      }
-    });
   }
 
   @override
@@ -71,10 +67,14 @@ class _MainPageState extends State<MainPage> {
       if (event.snapshot.value != null) {
         Map<dynamic, dynamic> data =
             event.snapshot.value as Map<dynamic, dynamic>;
-        _showStatusAlertDialog();
         if (data.containsKey('name')) {
           setState(() {
             _name = data['name'];
+          });
+        }
+        if (data.containsKey('status')) {
+          setState(() {
+            data['status'] == "yes";
           });
         }
         if (data.containsKey('address')) {
@@ -84,20 +84,9 @@ class _MainPageState extends State<MainPage> {
           _controller?.loadUrl(_address);
         }
 
-        // if (data.containsKey('status')) {
-        //   setState(() {
-        //     _status = data['status'];
-        //   });
-        //   if (_status == "yes") {
-        //     _showStatusAlertDialog();
-        //     print("dddddddddddddddddddddddddd");
-        //   }
-        // }
-
-        // Hanya tampilkan notifikasi saat bukan kali pertama memuat data
         if (!_firstDataLoad) {
           NotificationService().showNotification(
-              title: 'Name $_name',
+              title: '$_name Fallen!!',
               body: 'Location $_address',
               payLoad: _address);
         }
@@ -119,6 +108,7 @@ class _MainPageState extends State<MainPage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
+          
           leading: IconButton(
             icon: Icon(Icons.arrow_back, color: whiteColor),
             onPressed: () {
@@ -129,7 +119,7 @@ class _MainPageState extends State<MainPage> {
             "Location",
             style: whiteTextStyle,
           ),
-          backgroundColor: blueColor,
+          backgroundColor: greenColor,
         ),
         body: Stack(
           children: [
