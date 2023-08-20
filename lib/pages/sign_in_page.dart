@@ -45,6 +45,7 @@ class _SignInPageState extends State<SignInPage> {
 
   void _handleSignIn() {
     // Perform your sign-in logic here
+    context.read<PageBloc>().add(GoToMainPage());
 
     // Show a local notification
     // _showLocalNotification();
@@ -117,16 +118,16 @@ class _SignInPageState extends State<SignInPage> {
                   title: "Sign In",
                   onPressed: _handleSignIn,
                 ),
-                ElevatedButton(
-                  onPressed:
-                      _handleHome, // You can add this directly as onPressed
-                  child: Text('Show Local Notification'),
-                ),
-                ElevatedButton(
-                  onPressed:
-                      _handleSignInn, // You can add this directly as onPressed
-                  child: Text('Show Local Notification'),
-                ),
+                // ElevatedButton(
+                //   onPressed:
+                //       _handleHome, // You can add this directly as onPressed
+                //   child: Text('Show Local Notification'),
+                // ),
+                // ElevatedButton(
+                //   onPressed:
+                //       _handleSignInn, // You can add this directly as onPressed
+                //   child: Text('Show Local Notification'),
+                // ),
               ],
             ),
           ),
