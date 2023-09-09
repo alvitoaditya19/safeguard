@@ -8,6 +8,7 @@ import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:assets_audio_player/assets_audio_player.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -47,6 +48,7 @@ class _HomePageState extends State<HomePage> {
   Position? _currentPosition;
 
   bool _isAccelerometerActive = false;
+   final AssetsAudioPlayer assetsAudioPlayer = AssetsAudioPlayer();
   Future<void> _showStatusAlertDialog() async {
     return showDialog<void>(
       context: context,
@@ -108,7 +110,9 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-
+  assetsAudioPlayer.open(
+      Audio('assets/audios/fire_alarm.mp3'),
+    );
     _databaseReferenceAdmin.onValue.listen((DatabaseEvent event) {
       if (event.snapshot.value != null) {
         Map<dynamic, dynamic> data =
@@ -160,6 +164,7 @@ class _HomePageState extends State<HomePage> {
         }
 
         if (!_firstDataLoad && _status != "no") {
+          assetsAudioPlayer.play();
           NotificationService().showNotification(
               title: '$_name Fallen!!',
               body: 'Location $_address',
@@ -177,6 +182,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   void _toggleAccelerometer() {
+    assetsAudioPlayer.pause();
     setState(() {
       _status = "no";
     });
@@ -188,6 +194,12 @@ class _HomePageState extends State<HomePage> {
     }).catchError((error) {
       print("Failed to update data: $error");
     });
+  }
+  
+  @override
+  void dispose() {
+    assetsAudioPlayer.dispose();
+    super.dispose();
   }
 
   @override
