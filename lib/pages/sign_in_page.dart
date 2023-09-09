@@ -11,7 +11,8 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:vibration/vibration.dart';
-
+import 'package:another_flushbar/flushbar.dart';
+import 'package:flutter/material.dart';
 class SignInPage extends StatefulWidget {
   const SignInPage({super.key});
 
@@ -22,6 +23,8 @@ class SignInPage extends StatefulWidget {
 class _SignInPageState extends State<SignInPage> {
   final emailController = TextEditingController(text: '');
   final passwordController = TextEditingController(text: '');
+  String validEmail = "safeguard@gmail.com";
+String validPassword = "12345678";
   void _showLocalNotification() async {
     final flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
 
@@ -52,12 +55,24 @@ class _SignInPageState extends State<SignInPage> {
     // NotificationService()
     //         .showNotification(title: 'Sample title', body: 'It works!');
   }
-  void _handleSignInn() {
-    context.read<PageBloc>().add(GoToMainPage());
-  }
-    void _handleHome() {
+
+void _handleHome() {
+  final String email = emailController.text.trim();
+  final String password = passwordController.text.trim();
+
+  if (email == validEmail && password == validPassword) {
+    // Email dan password benar, beralih ke halaman selanjutnya
     context.read<PageBloc>().add(GoToHomePage());
+  } else {
+    // Email atau password salah, tampilkan Flushbar
+    Flushbar(
+      backgroundColor: redColor,
+      titleColor: whiteColor,
+      message: "Invalid email or password",
+      duration: Duration(seconds: 3),
+    )..show(context);
   }
+}
 
   @override
   Widget build(BuildContext context) {
@@ -116,18 +131,8 @@ class _SignInPageState extends State<SignInPage> {
                 ),
                 CustomFilledButton(
                   title: "Sign In",
-                  onPressed: _handleSignIn,
+                  onPressed: _handleHome,
                 ),
-                // ElevatedButton(
-                //   onPressed:
-                //       _handleHome, // You can add this directly as onPressed
-                //   child: Text('Show Local Notification'),
-                // ),
-                // ElevatedButton(
-                //   onPressed:
-                //       _handleSignInn, // You can add this directly as onPressed
-                //   child: Text('Show Local Notification'),
-                // ),
               ],
             ),
           ),

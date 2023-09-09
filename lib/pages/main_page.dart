@@ -84,7 +84,7 @@ class _MainPageState extends State<MainPage> {
           _controller?.loadUrl(_address);
         }
 
-        if (!_firstDataLoad) {
+        if (!_firstDataLoad && _status != "no") {
           NotificationService().showNotification(
               title: '$_name Fallen!!',
               body: 'Location $_address',
